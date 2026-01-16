@@ -51,11 +51,11 @@ I_NA_L <- 20 #Leader重新配置生产线的成本基础
 I_NA_F <- 18 #Follower重新配置生产线的成本基础
 #I_NA_F <- k
 n_t_NA <- numeric(length = t_NA_NA) #供应链流程步骤数量
-#v_t_f <- 3 #Follower追随的速度  zheliyouwenti
+#v_t_f <- 3 #Follower追随的速度  
 v_t_f <- numeric(length = t_NA_NA)
 Lambda_t_NA <- numeric(length = t_NA_NA) #供应链改进比例【市场份额消耗比例】
-a_NA_NA <- 20 #价格时间衰减函数的基础  ！！!后续未用到！！！
-b_t_NA <- numeric(length = t_NA_NA) #决策轮次阶梯价格  ！！！后续未用到！！！
+a_NA_NA <- 20 #价格时间衰减函数的基础  
+b_t_NA <- numeric(length = t_NA_NA) #决策轮次阶梯价格 
 mu_NA_NA <- 10 #地板价格
 
 #【补充】对P_t_F的定义？
@@ -153,7 +153,7 @@ print(paste("第",j,"轮次Follower的价格为：",P_t_F[j]))
 final_result[temp_num + j,2] <- P_t_L[j]
 final_result[temp_num + j,3] <- P_t_F[j]
 
-#【2】首先，分别计算Leader和Follower两者的销量
+#【2】分别计算Leader和Follower两者的销量
 #########################################################################################################
 Q_t_L[j] <- Gama_NA_NA * (U_t_NA[j] - Beta_NA_NA * P_t_L[j]) #Leader的销量
 Q_t_F[j] <- (1-Gama_NA_NA) * (U_t_NA[j] - Beta_NA_NA * P_t_F[j]) #Follower的销量
@@ -167,26 +167,8 @@ print(paste("第",j,"轮Follower的销量为：",Q_t_F[j]))
 final_result[temp_num + j,4] <- Q_t_L[j]
 final_result[temp_num + j,5] <- Q_t_F[j]
 
-#【3】然后，计算Leader和Follower的收益情况
-##########################################################################################################
-
-
-R_t_L <- Gama_NA_NA * Q_t_L[j] * P_t_L[j] - exp(P_t_L[j] + I_NA_L)
-R_t_F <- (1 - Gama_NA_NA) * Q_t_F[j] * P_t_F[j] - exp(P_t_F[j] + I_NA_F)
-#更新产品失效率的影响
-R_t_F <-  R_t_F * (1 - Market_loss_rate)
-
-#【输出】每一个阶段分别输出相应的计算结果
-print(paste("第",j,"轮次Leader的利润为：",R_t_L))
-print(paste("第",j,"轮次Follower的利润为：",R_t_F))
-final_result[temp_num + j,6] <- R_t_L
-final_result[temp_num + j,7] <- R_t_F
-} 
-  
-}
 
 ##########################################################################
 
-write.csv(final_result,"C:/Users/Administrator/Desktop/【小论文A】新媒体传播条件下，如何快速部署供应链和销售网络？/final_result/final_result_Theta_NA_NA.csv",row.names = FALSE)
+write.csv(final_result,"final_result_Theta_NA_NA.csv",row.names = FALSE) #针对每个参数，依次调整输出路径和文件名
 
-#这段代码，可以缩减后续整理数据的时间。
