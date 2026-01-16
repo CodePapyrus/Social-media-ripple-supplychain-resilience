@@ -58,18 +58,18 @@ a_NA_NA <- 20 # Base for price time decay function
 b_t_NA <- numeric(length = t_NA_NA) # Decision round tiered price 
 mu_NA_NA <- 10 # Floor price
 
-# [Supplement] Definition of P_t_F?
+# Definition of P_t_F
 P_t_F <- numeric(length = t_NA_NA) # Follower's initial sales price, temporarily set to be consistent with the Leader's initial price.  
 
-# [Supplement] Definition of Leader and Follower revenue functions.
+# Definition of Leader and Follower revenue functions.
 R_t_L <- 0 # Leader's revenue
 R_t_F <- 0 # Follower's revenue
 
-# [Supplement] Definition of Q_t_F and Q_T_L?
+# Definition of Q_t_F and Q_T_L
 Q_t_L <- numeric(length = t_NA_NA)
 Q_t_F <- numeric(length = t_NA_NA)
 
-# [6.10 Supplement] Calculation of loss function
+# Calculation of loss function
 # Newly inserted parameters related to loss function
 
 Theta_NA_NA <-  0.2# Erosion coefficient
@@ -170,3 +170,4 @@ final_result[temp_num + j,5] <- Q_t_F[j]
 ##########################################################################
 
 write.csv(final_result,"final_result_Theta_NA_NA.csv",row.names = FALSE) # For each parameter, adjust the output path and file name sequentially
+
