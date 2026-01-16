@@ -137,4 +137,5 @@ ggsave(filename = output_file,
 print(combined_plot)
 
 # # Output success message
-# cat("Combined graph has been successfully saved as '", output_file, "'\n", sep = "")
+cat("Combined graph has been successfully saved as '", output_file, "'\n", sep = "")
+
