@@ -1,16 +1,16 @@
-# 清理环境
+# Clean environment
 rm(list = ls())
 gc()
 
-# 加载必要的包
+# Load necessary packages
 library(ggplot2)
 library(dplyr)
 library(tidyr)
 
-# 设置随机种子
+# Set random seed
 set.seed(123)
 
-# 1. 定义简单的需求函数（不使用类）
+# 1. Define simple demand function (without using classes)
 demand_function <- function(x, params) {
   # params = list(a, b_list, T_list, mu)
   a <- params$a
@@ -18,9 +18,9 @@ demand_function <- function(x, params) {
   T_list <- params$T_list
   mu <- params$mu
   
-  # 确保参数有效
+  # Ensure parameter validity
   a <- max(0.01, min(0.99, a))
-  T_list <- sort(T_list)  # 确保递增
+  T_list <- sort(T_list)  # Ensure increasing order
   
   if (x > max(T_list)) {
     return(mu)
@@ -35,7 +35,7 @@ demand_function <- function(x, params) {
   return(mu)
 }
 
-# 2. 运行蒙特卡洛模拟函数
+# 2. Run Monte Carlo simulation function
 run_monte_carlo <- function(
     baseline_params = list(a = 0.9, b_list = c(100, 85, 70), 
                            T_list = c(5, 10, 15), mu = 50),
@@ -45,17 +45,17 @@ run_monte_carlo <- function(
     perturbation_level = 0.1
 ) {
   
-  # 生成时间点
+  # Generate time points
   time_points <- seq(0.1, time_horizon, length.out = n_time_points)
   
-  # 存储结果
+  # Store results
   all_demand_paths <- matrix(NA, nrow = n_simulations, ncol = n_time_points)
   all_params_list <- vector("list", n_simulations)
   
-  cat("开始蒙特卡洛模拟...\n")
+  cat("Starting Monte Carlo simulation...\n")
   
   for (sim in 1:n_simulations) {
-    # 生成扰动参数
+    # Generate perturbed parameters
     perturbed_params <- list(
       a = baseline_params$a * exp(rnorm(1, 0, perturbation_level * 0.1)),
       b_list = baseline_params$b_list + rnorm(length(baseline_params$b_list), 0, perturbation_level * 10),
@@ -63,7 +63,7 @@ run_monte_carlo <- function(
       mu = baseline_params$mu + rnorm(1, 0, perturbation_level * 5)
     )
     
-    # 确保参数有效性
+    # Ensure parameter validity
     perturbed_params$a <- max(0.01, min(0.99, perturbed_params$a))
     perturbed_params$b_list <- pmax(1, perturbed_params$b_list)
     perturbed_params$T_list <- pmax(0.1, perturbed_params$T_list)
@@ -72,18 +72,18 @@ run_monte_carlo <- function(
     
     all_params_list[[sim]] <- perturbed_params
     
-    # 计算需求路径
+    # Calculate demand path
     for (t in 1:n_time_points) {
       all_demand_paths[sim, t] <- demand_function(time_points[t], perturbed_params)
     }
     
-    if (sim %% 10 == 0) cat(sprintf("进度: %d/%d\n", sim, n_simulations))
+    if (sim %% 10 == 0) cat(sprintf("Progress: %d/%d\n", sim, n_simulations))
   }
   
-  # 计算基准路径
+  # Calculate baseline path
   baseline_path <- sapply(time_points, demand_function, params = baseline_params)
   
-  cat("模拟完成!\n")
+  cat("Simulation completed!\n")
   
   return(list(
     time_points = time_points,
@@ -95,18 +95,18 @@ run_monte_carlo <- function(
   ))
 }
 
-# 3. 分析函数
+# 3. Analysis function
 analyze_results <- function(results) {
   demand_paths <- results$all_demand_paths
   
-  # 计算基本统计
+  # Calculate basic statistics
   mean_path <- colMeans(demand_paths, na.rm = TRUE)
   std_path <- apply(demand_paths, 2, sd, na.rm = TRUE)
   ci_90_lower <- apply(demand_paths, 2, quantile, 0.05, na.rm = TRUE)
   ci_90_upper <- apply(demand_paths, 2, quantile, 0.95, na.rm = TRUE)
   cv <- std_path / abs(mean_path)
   
-  # 阶段统计
+  # Stage statistics
   stage_T <- results$baseline_params$T_list
   stage_stats <- list()
   
@@ -132,48 +132,48 @@ analyze_results <- function(results) {
   ))
 }
 
-# 4. 生成报告函数
+# 4. Generate report function
 generate_report <- function(results, analysis) {
   report_data <- data.frame()
   
-  # 基本信息
+  # Basic information
   report_data <- rbind(report_data, data.frame(
-    指标 = "模拟次数",
-    值 = as.character(results$n_simulations),
-    单位 = "次",
-    说明 = "蒙特卡洛模拟总次数"
+    Indicator = "Number of simulations",
+    Value = as.character(results$n_simulations),
+    Unit = "times",
+    Description = "Total number of Monte Carlo simulations"
   ))
   
-  # 阶段统计
+  # Stage statistics
   for (i in 1:length(analysis$stage_stats)) {
     stats <- analysis$stage_stats[[i]]
     report_data <- rbind(report_data, data.frame(
-      指标 = paste0("阶段", i, "转换点需求均值"),
-      值 = sprintf("%.2f", stats$mean),
-      单位 = "需求单位",
-      说明 = paste0("时间点T=", stats$time, ", CV=", sprintf("%.3f", stats$cv))
+      Indicator = paste0("Stage ", i, " transition point demand mean"),
+      Value = sprintf("%.2f", stats$mean),
+      Unit = "Demand units",
+      Description = paste0("Time point T=", stats$time, ", CV=", sprintf("%.3f", stats$cv))
     ))
   }
   
-  # 总体统计
+  # Overall statistics
   report_data <- rbind(report_data, data.frame(
-    指标 = "平均需求",
-    值 = sprintf("%.2f", mean(results$all_demand_paths, na.rm = TRUE)),
-    单位 = "需求单位",
-    说明 = "所有模拟和时间点的平均需求"
+    Indicator = "Average demand",
+    Value = sprintf("%.2f", mean(results$all_demand_paths, na.rm = TRUE)),
+    Unit = "Demand units",
+    Description = "Average demand across all simulations and time points"
   ))
   
   report_data <- rbind(report_data, data.frame(
-    指标 = "需求标准差",
-    值 = sprintf("%.2f", sd(results$all_demand_paths, na.rm = TRUE)),
-    单位 = "需求单位",
-    说明 = "需求的总标准差"
+    Indicator = "Demand standard deviation",
+    Value = sprintf("%.2f", sd(results$all_demand_paths, na.rm = TRUE)),
+    Unit = "Demand units",
+    Description = "Overall standard deviation of demand"
   ))
   
   return(report_data)
 }
 
-# 5. 可视化函数
+# 5. Visualization function
 visualize_results <- function(results, analysis, save_path = NULL) {
   plot_data <- data.frame(
     time = results$time_points,
@@ -188,61 +188,60 @@ visualize_results <- function(results, analysis, save_path = NULL) {
                 fill = "gray70", alpha = 0.5) +
     geom_line(aes(y = baseline), color = "red", linewidth = 1) +
     geom_line(aes(y = mean), color = "blue", linetype = "dashed", linewidth = 1) +
-    labs(x = "时间", y = "需求", 
-         title = "蒙特卡洛模拟结果",
-         subtitle = paste0("模拟次数: ", results$n_simulations)) +
+    labs(x = "Time", y = "Demand", 
+         title = "Monte Carlo Simulation Results",
+         subtitle = paste0("Number of simulations: ", results$n_simulations)) +
     theme_minimal()
   
-  # 添加阶段转换线
+  # Add stage transition lines
   for (T in results$baseline_params$T_list) {
     p <- p + geom_vline(xintercept = T, linetype = "dotted", color = "darkgreen", alpha = 0.5)
   }
   
   if (!is.null(save_path)) {
     ggsave(save_path, p, width = 10, height = 6, dpi = 300)
-    cat("图表已保存到:", save_path, "\n")
+    cat("Chart saved to:", save_path, "\n")
   }
   
   return(p)
 }
 
-# ================ 主程序 ================
+# ================ Main Program ================
 
-cat("开始蒙特卡洛测试...\n")
+cat("Starting Monte Carlo test...\n")
 
-# 运行模拟
+# Run simulation
 results <- run_monte_carlo(
-  n_simulations = 200,  # 模拟次数
-  n_time_points = 50,   # 时间点数量
-  time_horizon = 20,    # 时间范围
-  perturbation_level = 0.1  # 扰动水平
+  n_simulations = 200,  # Number of simulations
+  n_time_points = 50,   # Number of time points
+  time_horizon = 20,    # Time horizon
+  perturbation_level = 0.1  # Perturbation level
 )
 
-# 分析结果
+# Analyze results
 analysis <- analyze_results(results)
 
-# 生成报告
+# Generate report
 report_df <- generate_report(results, analysis)
-cat("\n===== 报告结果 =====\n")
+cat("\n===== Report Results =====\n")
 print(report_df)
 
-# 可视化
+# Visualize
 p <- visualize_results(results, analysis, save_path = "final_results.png")
 print(p)
 
-# 保存报告
+# Save report
 write.csv(report_df, "final_report.csv", row.names = FALSE)
-cat("\n报告已保存到: final_report.csv\n")
-cat("图表已保存到: final_results.png\n")
+cat("\nReport saved to: final_report.csv\n")
+cat("Chart saved to: final_results.png\n")
 
-# 显示阶段详细统计
-cat("\n===== 阶段详细统计 =====\n")
+# Display detailed stage statistics
+cat("\n===== Detailed Stage Statistics =====\n")
 for (i in 1:length(analysis$stage_stats)) {
   stats <- analysis$stage_stats[[i]]
-  cat(sprintf("阶段%d (T=%.1f):\n", i, stats$time))
-  cat(sprintf("  均值: %.2f\n", stats$mean))
-  cat(sprintf("  标准差: %.2f\n", stats$sd))
-  cat(sprintf("  变异系数: %.3f\n", stats$cv))
+  cat(sprintf("Stage %d (T=%.1f):\n", i, stats$time))
+  cat(sprintf("  Mean: %.2f\n", stats$mean))
+  cat(sprintf("  Standard deviation: %.2f\n", stats$sd))
+  cat(sprintf("  Coefficient of variation: %.3f\n", stats$cv))
   cat("\n")
-
 }
