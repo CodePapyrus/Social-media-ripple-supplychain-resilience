@@ -14,34 +14,32 @@ Run the following two scripts to establish the baseline multi-stage game model:
    - Output: Demand Distribution Statistics: Key summary statistics derived from the simulated demand distribution, including: Expected Demand (Mean), Standard Deviation,Coefficient of Variation (CV),Quantiles (5th percentile, 95th percentile)
 
 ### Step 2: Sensitivity Analysis
-Run the following script to systematically scan 9 key parameters:
+Run the following script to systematically scan 8 key parameters:
 
 3. **`03_multi_stage_game.R`** - Multi-stage game parameter sensitivity analysis
-   - Sequentially scans 9 parameter combinations:
+   - Sequentially scans 8 parameter combinations:
      ```
      1. U_t_NA (Potential market demand)
-     2. Beta_NA_NA (Price_sensitivity parameter)
-     3. Gama_NA_NA (IDL's maeket share)
-     4. I_NA_L (L-SC-AC)
-     5. I_NA_F (F-SC-AC)
-     6. n_t_NA (Number of supply chain network nodes)
-     7. v_t_f (ICF's supply chain imitation speed)
-     8. Epsilon_NA_NA (Process efficiency factor)
-     9. Theta_NA_NA (Competitive erosion rate)
+     2. Gama_NA_NA (IDL's maeket share)
+     3. I_NA_L (L-SC-AC)
+     4. I_NA_F (F-SC-AC)
+     5. n_t_NA (Number of supply chain network nodes)
+     6. v_t_f (ICF's supply chain imitation speed)
+     7. Epsilon_NA_NA (Process efficiency factor)
+     8. Theta_NA_NA (Competitive erosion rate)
      ```
-   - Output: 9 CSV files, named in the format `final_result_[parameter_name].csv`
+   - Output: 8 CSV files, named in the format `final_result_[parameter_name].csv`
 
 ### Step 3: Visualization
 Run the following scripts in order to generate the paper's figures:
 
 | Figure Number | Corresponding Parameter | Script to Run |
 |---------------|-------------------------|---------------|
-| Figure 7      | U_t_NA                  | `Code for Figure 7.R` |
-| Figure 8      | Beta_NA_NA              | `Code for Figure 8.R` |
-| Figure 9      | Gama_NA_NA              | `Code for Figure 9.R` |
-| Figure 10     | I_NA_L                  | `Code for Figure 10.R` |
-| Figure 11     | I_NA_F                  | `Code for Figure 11.R` |
-| Figure 12     | n_t_NA                  | `Code for Figure 12.R` |
-| Figure 13     | v_t_f                   | `Code for Figure 13.R` |
-| Figure 14     | Epsilon_NA_NA           | `Code for Figure 14.R` |
-| Figure 15     | Theta_NA_NA             | `Code for Figure 15.R` |
+| Figure 3      | U_t_NA                  | `Code for Figure 3.R` |
+| Figure 4      | Gama_NA_NA              | `Code for Figure 4.R` |
+| Figure 5     | I_NA_L                  | `Code for Figure 5.R` |
+| Figure 6     | I_NA_F                  | `Code for Figure 6.R` |
+| Figure 7     | n_t_NA                  | `Code for Figure 7.R` |
+| Figure 8     | v_t_f                   | `Code for Figure 8.R` |
+| Figure 9     | Epsilon_NA_NA           | `Code for Figure 9.R` |
+| Figure 10     | Theta_NA_NA             | `Code for Figure 10.R` |
